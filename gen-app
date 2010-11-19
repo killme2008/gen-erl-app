@@ -11,7 +11,7 @@
     }).
 
 -define(P(D), io:format(D)).
--define(P(F, D), io:format(F, D)).
+-define(P2(F, D), io:format(F, D)).
 
 
 usage() ->
@@ -52,9 +52,9 @@ parse_opts(["-m", Mail | Tail], Opts) ->
 parse_opts(["-o", Output | Tail], Opts) ->
     parse_opts(Tail, Opts#opts{output = Output});
 parse_opts([Unknown | Tail], Opts) ->
-    ?P("*warning* unknown option: ~p", [Unknown]),
+    ?P2("*warning* unknown option: ~p", [Unknown]),
     parse_opts(Tail, Opts).
-    
+
 %% gen app
 do_gen_app(AppName, Opts = #opts{}) ->
     check_app_name(AppName),
@@ -78,7 +78,7 @@ check_app_name(AppName) ->
 create_dirs(AppName, Opts = #opts{output = Output}) ->
     ok = filelib:ensure_dir(Output ++ "/"),
     [begin
-        ok = filelib:ensure_dir(filename:join([Output, P, "*"])) 
+        ok = filelib:ensure_dir(filename:join([Output, P, "*"]))
     end || P <- ["ebin", "edoc", "test"]],
 
     [begin
@@ -88,9 +88,9 @@ create_dirs(AppName, Opts = #opts{output = Output}) ->
         [begin
             FileName = filename:basename(File),
             DstFile = filename:join([Output, P, FileName]),
-            ok = convert_file(File, convert_filename(DstFile, AppName), AppName, Opts) 
+            ok = convert_file(File, convert_filename(DstFile, AppName), AppName, Opts)
         end || File <- Files]
-        
+
     end || P <- ["include", "src"]].
 
 
@@ -100,16 +100,16 @@ create_other_files(AppName, Opts = #opts{output = Output}) ->
         Dir = filename:dirname(File),
         FileName = filename:basename(File),
         DstFile = filename:join([Output, Dir, FileName]),
-        ok = convert_file(Full, convert_filename(DstFile, AppName), AppName, Opts) 
-    end || File <- ["Makefile", "vsn.mk", "./src/Makefile", 
+        ok = convert_file(Full, convert_filename(DstFile, AppName), AppName, Opts)
+    end || File <- ["Makefile", "vsn.mk", "./src/Makefile",
                     "./src/@APP@ctl.tpl", "./src/@APP@.app.src",
-                    "./src/overview.edoc", 
+                    "./src/overview.edoc",
                     "./test/test.coverspec"]].
 
 convert_file(File, DstFile, AppName, Opts) ->
-    ?P("copy file: ~p to: ~p\n", [File, DstFile]),
-    #opts{copyright = CopyRight, 
-        author = Author, 
+    ?P2("copy file: ~p to: ~p\n", [File, DstFile]),
+    #opts{copyright = CopyRight,
+        author = Author,
         email = Mail
         } = Opts,
     {ok, Bin} = file:read_file(File),
